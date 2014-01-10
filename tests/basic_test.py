@@ -33,10 +33,10 @@ def test_operator_control(robot, wpilib):
     stick = wpilib.Joystick(1)
     
     # if this fails, your motor is not setup correctly
-    #assert isinstance(motor, wpilib.Jaguar)
+    assert isinstance(motor, wpilib.Jaguar)
     
     # if this fails, your digital input is not setup correctly
-    #assert isinstance(din, wpilib.DigitalInput)
+    assert isinstance(din, wpilib.DigitalInput)
      
     
     class TestController(object):
