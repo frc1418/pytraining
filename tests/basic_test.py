@@ -72,9 +72,14 @@ def test_challenges(robot, wpilib):
             '''
             self.loop_count += 1
             
-            # first challenge problem
-            # -> 
             if challenge == 1:
+                # -> Set the motor value to 1
+                
+                if tm > 0:
+                    assert robot.motor.value == 1.0
+            
+            elif challenge == 2:
+                # -> set the motor to the value of the joystick
                 
                 # motor value is equal to the previous value of the stick
                 assert robot.motor.value == self.stick_prev
@@ -85,10 +90,9 @@ def test_challenges(robot, wpilib):
                 # set the limit switch based on time too
                 self.stick_prev = stick.y
                 
-            
-            # second challenge problem: 
-            # -> stop the  motor when the digital input is on
-            elif challenge == 2:
+             
+            elif challenge == 3:
+                # -> stop the  motor when the digital input is on
                 
                 # motor value is equal to the previous value of the stick
                 assert robot.motor.value == self.stick_prev
@@ -103,9 +107,8 @@ def test_challenges(robot, wpilib):
                 else:
                     din.value = False
                     self.stick_prev = 0
-
-            # second challenge problem
-            elif challenge == 3:
+            
+            elif challenge == 4:
                 pass
             
             return not self.loop_count == 1000
