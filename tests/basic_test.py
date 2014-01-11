@@ -32,6 +32,11 @@ def test_operator_control(robot, wpilib):
     din = wpilib.DigitalModule._io[3]
     stick = wpilib.Joystick(1)
     
+    challenge = robot.challenge if hasattr(robot, 'challenge') else None
+    
+    if challenge is None:
+        return
+    
     # if this fails, your motor is not setup correctly
     assert isinstance(motor, wpilib.Jaguar)
     
@@ -61,19 +66,26 @@ def test_operator_control(robot, wpilib):
             '''
             self.loop_count += 1
             
-            # motor value is equal to the previous value of the stick
-            assert robot.motor.value == self.stick_prev
-            
-            # set the stick value based on time
-            stick.y = (tm % 2.0) - 1.0
-            
-            # set the limit switch based on time too
-            if (tm % 2.0) < 0.5:
-                din.value = True
-                self.stick_prev = stick.y
-            else:
-                din.value = False
-                self.stick_prev = 0
+            # first challenge problem
+            if challenge == 1:
+                
+                # motor value is equal to the previous value of the stick
+                assert robot.motor.value == self.stick_prev
+                
+                # set the stick value based on time
+                stick.y = (tm % 2.0) - 1.0
+                
+                # set the limit switch based on time too
+                if (tm % 2.0) < 0.5:
+                    din.value = True
+                    self.stick_prev = stick.y
+                else:
+                    din.value = False
+                    self.stick_prev = 0
+
+            # second challenge problem
+            elif challenge == 2:
+                pass
             
             return not self.loop_count == 1000
     
