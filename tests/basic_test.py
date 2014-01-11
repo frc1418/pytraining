@@ -15,6 +15,14 @@
 # object is created each time
 #
 
+def test_motors(robot, wpilib):
+    
+    motor = wpilib.DigitalModule._pwm[2]
+    din = wpilib.DigitalModule._io[3]
+    stick = wpilib.Joystick(1)
+
+    return motor, din, stick
+
 def test_autonomous(robot, wpilib):
     
     wpilib.internal.enabled = True
@@ -25,12 +33,10 @@ def test_disabled(robot):
     robot.Disabled()
 
 
-def test_operator_control(robot, wpilib):
+def test_challenges(robot, wpilib):
     
     # retrieve the objects
-    motor = wpilib.DigitalModule._pwm[2]
-    din = wpilib.DigitalModule._io[3]
-    stick = wpilib.Joystick(1)
+    motor, din, stick = test_motors(robot, wpilib)
     
     challenge = robot.challenge if hasattr(robot, 'challenge') else None
     
@@ -67,7 +73,22 @@ def test_operator_control(robot, wpilib):
             self.loop_count += 1
             
             # first challenge problem
+            # -> 
             if challenge == 1:
+                
+                # motor value is equal to the previous value of the stick
+                assert robot.motor.value == self.stick_prev
+                
+                # set the stick value based on time
+                stick.y = (tm % 2.0) - 1.0
+                
+                # set the limit switch based on time too
+                self.stick_prev = stick.y
+                
+            
+            # second challenge problem: 
+            # -> stop the  motor when the digital input is on
+            elif challenge == 2:
                 
                 # motor value is equal to the previous value of the stick
                 assert robot.motor.value == self.stick_prev
@@ -84,7 +105,7 @@ def test_operator_control(robot, wpilib):
                     self.stick_prev = 0
 
             # second challenge problem
-            elif challenge == 2:
+            elif challenge == 3:
                 pass
             
             return not self.loop_count == 1000
@@ -96,3 +117,4 @@ def test_operator_control(robot, wpilib):
     robot.OperatorControl()
     
     assert controller.loop_count == 1000
+    assert wpilib._wpilib._fake_time.FAKETIME.time >= 0.04 * 900
