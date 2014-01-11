@@ -76,13 +76,13 @@ def test_challenges(robot, wpilib):
                 # -> Set the motor value to 1
                 
                 if tm > 0:
-                    assert robot.motor.value == 1.0
+                    assert motor.value == 1.0
             
             elif challenge == 2:
                 # -> set the motor to the value of the joystick
                 
                 # motor value is equal to the previous value of the stick
-                assert robot.motor.value == self.stick_prev
+                assert motor.value == self.stick_prev
                 
                 # set the stick value based on time
                 stick.y = (tm % 2.0) - 1.0
@@ -95,7 +95,7 @@ def test_challenges(robot, wpilib):
                 # -> stop the  motor when the digital input is on
                 
                 # motor value is equal to the previous value of the stick
-                assert robot.motor.value == self.stick_prev
+                assert motor.value == self.stick_prev
                 
                 # set the stick value based on time
                 stick.y = (tm % 2.0) - 1.0
