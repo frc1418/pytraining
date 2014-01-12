@@ -54,8 +54,7 @@ def test_challenges(robot, wpilib):
         '''This object is only used for this test'''
     
         loop_count = 0
-        
-        stick_prev = 0
+        next_motor = 0
         
         def IsOperatorControl(self, tm):
             '''
@@ -72,44 +71,97 @@ def test_challenges(robot, wpilib):
             '''
             self.loop_count += 1
             
+            # if there's an error here, your motor value does not match 
+            # the value that is expected at this time
+            if self.loop_count != 0:
+                assert motor.value == self.next_motor
+            
+            
             if challenge == 1:
                 # -> Set the motor value to 1
                 
-                if tm > 0:
-                    assert motor.value == 1.0
+                self.next_motor = 1.0
             
             elif challenge == 2:
                 # -> set the motor to the value of the joystick
-                
-                # motor value is equal to the previous value of the stick
-                assert motor.value == self.stick_prev
                 
                 # set the stick value based on time
                 stick.y = (tm % 2.0) - 1.0
                 
                 # set the limit switch based on time too
-                self.stick_prev = stick.y
+                self.next_motor = stick.y
                 
              
             elif challenge == 3:
                 # -> stop the  motor when the digital input is on
-                
-                # motor value is equal to the previous value of the stick
-                assert motor.value == self.stick_prev
                 
                 # set the stick value based on time
                 stick.y = (tm % 2.0) - 1.0
                 
                 # set the limit switch based on time too
                 if (tm % 2.0) < 0.5:
-                    din.value = True
-                    self.stick_prev = stick.y
+                    din.value = 1
+                    self.next_motor = stick.y
                 else:
-                    din.value = False
-                    self.stick_prev = 0
+                    din.value = 0
+                    self.next_motor = 0
             
             elif challenge == 4:
-                pass
+                #
+                # complex state machine:
+                #
+                # if the input switch is on for more than 1 second,
+                # move the motor forward for three seconds, and backwards for
+                # two seconds. Otherwise, allow the motor to be controlled
+                # directly by the Y axis of the Joystick
+                #
+                # edge cases
+                # - input isn't long enough
+                # - spurious input during one of the periods
+                 
+                stick.y = (tm % 2.0) - 1.0
+                self.next_motor = stick.y
+                din.value = 0
+                 
+                if tm < 1:
+                    pass
+                
+                elif tm < 1.5:
+                    din.value = 1
+                    
+                elif tm < 3:
+                    pass
+                    
+                elif tm < 4.01:
+                    din.value = 1
+                    
+                elif tm < 5:
+                    din.value = 1
+                    self.next_motor = 1.0
+                    
+                elif tm < 6:
+                    din.value = 0
+                    self.next_motor = 1.0
+                    
+                elif tm < 7.01:
+                    din.value = 1
+                    self.next_motor = 1.0
+                
+                elif tm < 9.04:
+                    din.value = 1
+                    self.next_motor = -1.0
+                
+                elif tm < 9.9:
+                    din.value = 1
+                    
+                elif tm < 15:
+                    pass
+                
+                elif tm < 15.9:
+                    din.value = 1
+                
+                else: 
+                    din.value = 0
             
             return not self.loop_count == 1000
     
